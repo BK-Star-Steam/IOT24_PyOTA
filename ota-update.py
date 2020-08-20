@@ -7,6 +7,12 @@ import time
 
 
 def depositFiles():
+    """
+    Scans the deposit directory.
+
+    :return: the name of each file inside the deposit directory
+    :rtype: list
+    """
     files = []
     for file in os.listdir("./deposit"):
         if not file.startswith("."):
@@ -15,6 +21,14 @@ def depositFiles():
 
 
 def directoryTree(rootdir):
+    """
+    Generates a directory tree of the given directory.
+
+    :param rootdir: root directory
+    :type rootdir: str
+    :return: the directory tree
+    :rtype: dict
+    """
     directory = {}
     rootdir = rootdir.rstrip(os.sep)
     start = rootdir.rfind(os.sep) + 1
@@ -27,6 +41,14 @@ def directoryTree(rootdir):
 
 
 def moveDir(directoryTree, branch):
+    """
+    Recursive function used to move the files from the deposit to the main directory.
+
+    :param directoryTree: the directory tree of the deposit directory
+    :type directoryTree: list
+    :param branch: the current branch (recursive func.)
+    :type branch: str
+    """
     for name in directoryTree:
         if "." in name:
             src = "./deposit/" + branch + name
@@ -40,16 +62,22 @@ def moveDir(directoryTree, branch):
             os.rmdir("./deposit/" + branch + name)
 
 
-def moveToMain(names):
-    # if "main.py" in names:
+def moveToMain():
+    """
+    Moves all the files from the deposit to main directory.
+    """
     tree = directoryTree("deposit")
     moveDir(tree["deposit"], "")
     pb.info("Main has been updated with new deposit files.")
-    # else:
-    #     raise Exception("No 'main.py' inside deposit.")
 
 
 def startMain():
+    """
+    Starts the main.py python script inside the main directory.
+
+    :raises Exception: if no main.py found inside the main directory
+    :return: the subprocess
+    """
     files = []
     for file in os.listdir("./main"):
         if not file.startswith("."):
@@ -63,6 +91,11 @@ def startMain():
 
 
 def endMain(mainProc):
+    """
+    Kills the given subprocess.
+
+    :param mainProc: the currently running subprocess
+    """
     status = sp.Popen.poll(mainProc)
     if status is None:
         sp.Popen.terminate(mainProc)
@@ -71,7 +104,7 @@ def endMain(mainProc):
 
 pb.init()
 
-# checking if OTA architecture OK and update it if needed
+# checks if OTA architecture OK and updates it if needed
 neededDirectories = ("deposit", "main")
 
 for directory in neededDirectories:
@@ -82,12 +115,12 @@ for directory in neededDirectories:
 
 pb.info("OTA architecture is set up.")
 
-# checking if deposit is not empty, if yes: update main
+# checks if deposit is not empty, if yes: updates main
 if depositFiles():
     pb.info("New files in deposit detected.")
-    moveToMain(depositFiles())
+    moveToMain()
 
-# start main
+# starts main
 running = True
 while running:
     mainProc = startMain()
@@ -103,6 +136,6 @@ while running:
         time.sleep(10)
         pb.info("Interupting main program.")
         endMain(mainProc)
-        moveToMain(depositFiles())
+        moveToMain()
 
 pb.exit()
