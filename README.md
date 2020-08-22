@@ -51,11 +51,14 @@ Once you have your working python project inside the _main_ folder (see [First e
 2. You can delete files from the _main_ folder if you need, but you should not do so while the _ota-update.py_ is still running
 3. You need to have a _main.py_ script inside the _main_ folder in order to use the _ota-update.py_ script properly.
 4. You can update any file that you want with the script, even the _main.py_ script. Just put it inside the _deposit_ folder.
+5. If you put some files inside the _deposit_ folder while the _ota-update.py_ script is not running, the files will be moved to the _main_ folder when you will run the script.
 
 ## Why I created this
 
-I created this file architecture/python script because I used to have to update a python script to a Raspberry Pi via FTP. I always needed to connect to the Raspberry Pi via VNC or SSH in order to:
+I created this file architecture/python script because I used to have to update a python script to a [Raspberry Pi](https://www.raspberrypi.org/) via FTP. I always needed to connect to the Raspberry Pi via VNC or SSH in order to:
 
 1. Stop the currently running python script
 2. Delete the old version of the python file
 3. Run the new script that I just uploaded
+
+Now, with this solution, I only need to run the _ota-update.py_ script once (or even auto-run at startup) and if I need to update my script or anything about my python project, I just transfer the files inside the _deposit_ folder via FTP. My script will start again automatically after the update.
